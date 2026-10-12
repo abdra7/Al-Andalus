@@ -154,10 +154,12 @@ describe("image dataset", () => {
     }
   });
 
-  it("all images have a source URL and local file path", () => {
+  it("all images have a source URL and subpath-safe local path", () => {
     for (const img of images) {
       expect(img.sourceUrl).toMatch(/^https:\/\/commons\.wikimedia\.org/);
-      expect(img.localFile).toMatch(/^\/images\//);
+      // relative so it resolves under the /الأندلس deployment subpath
+      expect(img.localFile, `${img.id} must use a relative path`).toMatch(/^\.\/images\//);
+      expect(img.localFile).not.toMatch(/^\/images\//); // root-absolute breaks the subpath
     }
   });
 

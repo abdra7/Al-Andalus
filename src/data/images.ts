@@ -1,6 +1,7 @@
 // Image metadata for Al-Andalus historical atlas.
 // All images sourced from Wikimedia Commons with verified redistribution licenses.
 // arabicCaption provides the Arabic alt text / figcaption used in the UI.
+// localFile paths are relative so they resolve under the /الأندلس deployment subpath.
 // Raw record: src/data/images.json. Full policy: README.md.
 
 export interface HistoricalImage {
@@ -20,7 +21,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "alhambra-1",
     "subject": "alhambra",
-    "localFile": "/images/alhambra-1.jpg",
+    "localFile": "./images/alhambra-1.jpg",
     "width": 1200,
     "height": 1940,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bell_Alhambra_Granada_Spain.jpg",
@@ -32,7 +33,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "alhambra-2",
     "subject": "alhambra",
-    "localFile": "/images/alhambra-2.jpg",
+    "localFile": "./images/alhambra-2.jpg",
     "width": 1200,
     "height": 1805,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Puerta_del_Vino_Alhambra_Granada_Spain.jpg",
@@ -44,7 +45,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "alhambra-3",
     "subject": "alhambra",
-    "localFile": "/images/alhambra-3.jpg",
+    "localFile": "./images/alhambra-3.jpg",
     "width": 1200,
     "height": 676,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_whole_Alhambra_Granada_Spain.jpg",
@@ -56,7 +57,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "alhambra-4",
     "subject": "alhambra",
-    "localFile": "/images/alhambra-4.jpg",
+    "localFile": "./images/alhambra-4.jpg",
     "width": 1200,
     "height": 850,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fountain_patio_de_los_Leones_Alhambra_Granada_Spain.jpg",
@@ -68,7 +69,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "generalife-1",
     "subject": "generalife",
-    "localFile": "/images/generalife-1.jpg",
+    "localFile": "./images/generalife-1.jpg",
     "width": 1200,
     "height": 1848,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alhambra_Generalife_fountains.jpg",
@@ -80,7 +81,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "generalife-2",
     "subject": "generalife",
-    "localFile": "/images/generalife-2.jpg",
+    "localFile": "./images/generalife-2.jpg",
     "width": 1200,
     "height": 1479,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Euphorbia_marginata_Generalife_Granada_Spain.jpg",
@@ -92,7 +93,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "granada-1",
     "subject": "granada",
-    "localFile": "/images/granada-1.jpg",
+    "localFile": "./images/granada-1.jpg",
     "width": 1200,
     "height": 1805,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alhambra_-_Granada_-_005_-_Panorama_part.jpg",
@@ -104,7 +105,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "granada-2",
     "subject": "granada",
-    "localFile": "/images/granada-2.jpg",
+    "localFile": "./images/granada-2.jpg",
     "width": 1200,
     "height": 1805,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alhambra_-_Granada_-_007_-_Panorama_part.jpg",
@@ -116,7 +117,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "granada-3",
     "subject": "granada",
-    "localFile": "/images/granada-3.jpg",
+    "localFile": "./images/granada-3.jpg",
     "width": 1200,
     "height": 1805,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alhambra_-_Granada_-_008_-_Panorama_part.jpg",
@@ -128,7 +129,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-mosque-1",
     "subject": "cordoba-mosque",
-    "localFile": "/images/cordoba-mosque-1.jpg",
+    "localFile": "./images/cordoba-mosque-1.jpg",
     "width": 1200,
     "height": 800,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Interior_Mezquita_Cordoba_Spain.jpg",
@@ -140,7 +141,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-mosque-2",
     "subject": "cordoba-mosque",
-    "localFile": "/images/cordoba-mosque-2.jpg",
+    "localFile": "./images/cordoba-mosque-2.jpg",
     "width": 1200,
     "height": 899,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%B3rdoba._La_Mezquita_LCCN2017660381.jpg",
@@ -152,7 +153,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-mosque-3",
     "subject": "cordoba-mosque",
-    "localFile": "/images/cordoba-mosque-3.jpg",
+    "localFile": "./images/cordoba-mosque-3.jpg",
     "width": 1200,
     "height": 959,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:C%C3%B3rdoba._Vista_interior_de_la_Catedral_%C3%B3_Mezquita_LCCN94511958.jpg",
@@ -164,7 +165,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-mosque-4",
     "subject": "cordoba-mosque",
-    "localFile": "/images/cordoba-mosque-4.jpg",
+    "localFile": "./images/cordoba-mosque-4.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mezquita_cordoba_arco_interior.jpg",
@@ -176,7 +177,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-1",
     "subject": "cordoba",
-    "localFile": "/images/cordoba-1.jpg",
+    "localFile": "./images/cordoba-1.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Historic_centre_of_C%C3%B3rdoba_Part1_017.jpg",
@@ -188,7 +189,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-2",
     "subject": "cordoba",
-    "localFile": "/images/cordoba-2.jpg",
+    "localFile": "./images/cordoba-2.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Historic_centre_of_C%C3%B3rdoba_Part1_036.jpg",
@@ -200,7 +201,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "cordoba-3",
     "subject": "cordoba",
-    "localFile": "/images/cordoba-3.jpg",
+    "localFile": "./images/cordoba-3.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Historic_centre_of_C%C3%B3rdoba_Part1_061.jpg",
@@ -212,7 +213,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "zahra-1",
     "subject": "zahra",
-    "localFile": "/images/zahra-1.jpg",
+    "localFile": "./images/zahra-1.jpg",
     "width": 1200,
     "height": 800,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ruins_-_Madinat_al-Zahra_(2).JPG",
@@ -224,7 +225,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "zahra-2",
     "subject": "zahra",
-    "localFile": "/images/zahra-2.jpg",
+    "localFile": "./images/zahra-2.jpg",
     "width": 1200,
     "height": 777,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ruins_-_Madinat_al-Zahra.JPG",
@@ -236,7 +237,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "zahra-3",
     "subject": "zahra",
-    "localFile": "/images/zahra-3.jpg",
+    "localFile": "./images/zahra-3.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Patio_de_las_Mujeres,_Alc%C3%A1zar_de_los_Reyes_Cristianos.jpg",
@@ -248,7 +249,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "seville-1",
     "subject": "seville",
-    "localFile": "/images/seville-1.jpg",
+    "localFile": "./images/seville-1.jpg",
     "width": 1200,
     "height": 858,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Plaza_Virgen_de_los_Reyes,_Seville,_Spain_-_Sep_2009.jpg",
@@ -260,7 +261,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "seville-2",
     "subject": "seville",
-    "localFile": "/images/seville-2.jpg",
+    "localFile": "./images/seville-2.jpg",
     "width": 1200,
     "height": 1800,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:La_Giralda,_Seville,_Spain_-_Sep_2009.jpg",
@@ -272,7 +273,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "seville-3",
     "subject": "seville",
-    "localFile": "/images/seville-3.jpg",
+    "localFile": "./images/seville-3.jpg",
     "width": 1200,
     "height": 1600,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giralda_Sevilla.jpg",
@@ -284,7 +285,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "seville-4",
     "subject": "seville",
-    "localFile": "/images/seville-4.jpg",
+    "localFile": "./images/seville-4.jpg",
     "width": 1200,
     "height": 978,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Giralda_cath%C3%A9drale_tour_Seville_Espagne.jpg",
@@ -296,7 +297,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "toledo-1",
     "subject": "toledo",
-    "localFile": "/images/toledo-1.jpg",
+    "localFile": "./images/toledo-1.jpg",
     "width": 1200,
     "height": 802,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vista_general_de_Toledo_(Espa%C3%B1a)_01.jpg",
@@ -308,7 +309,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "toledo-2",
     "subject": "toledo",
-    "localFile": "/images/toledo-2.jpg",
+    "localFile": "./images/toledo-2.jpg",
     "width": 1200,
     "height": 800,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Toledo_-_02.jpg",
@@ -320,7 +321,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "toledo-3",
     "subject": "toledo",
-    "localFile": "/images/toledo-3.jpg",
+    "localFile": "./images/toledo-3.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Historic,_Puente_del_Toledo_(6382189033).jpg",
@@ -332,7 +333,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "malaga-1",
     "subject": "malaga",
-    "localFile": "/images/malaga-1.jpg",
+    "localFile": "./images/malaga-1.jpg",
     "width": 1200,
     "height": 537,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Malaga_Alcazaba_25-9-2007a.JPG",
@@ -344,7 +345,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "malaga-2",
     "subject": "malaga",
-    "localFile": "/images/malaga-2.jpg",
+    "localFile": "./images/malaga-2.jpg",
     "width": 1200,
     "height": 799,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alcazaba_Antequera.jpg",
@@ -356,7 +357,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "malaga-3",
     "subject": "malaga",
-    "localFile": "/images/malaga-3.jpg",
+    "localFile": "./images/malaga-3.jpg",
     "width": 1200,
     "height": 1942,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Spain_Andalusia_Malaga_BW_2015-10-24_14-59-25.jpg",
@@ -368,7 +369,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "valencia-1",
     "subject": "valencia",
-    "localFile": "/images/valencia-1.jpg",
+    "localFile": "./images/valencia-1.jpg",
     "width": 1200,
     "height": 911,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lonja_de_la_Seda_(Valencia).jpg",
@@ -380,7 +381,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "valencia-2",
     "subject": "valencia",
-    "localFile": "/images/valencia-2.jpg",
+    "localFile": "./images/valencia-2.jpg",
     "width": 1200,
     "height": 2007,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lonja_de_la_Seda,_Valencia,_Espa%C3%B1a,_2014-06-29,_DD_20.JPG",
@@ -392,7 +393,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "map-north-africa-andalus-map-800-png",
     "subject": "maps",
-    "localFile": "/images/map-north-africa-andalus-map-800-png.png",
+    "localFile": "./images/map-north-africa-andalus-map-800-png.png",
     "width": 1400,
     "height": 988,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:North_Africa_%26_Andalus_map_800.png",
@@ -404,7 +405,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "map-al-andalus-siglos-xii-xiii-jpg",
     "subject": "maps",
-    "localFile": "/images/map-al-andalus-siglos-xii-xiii-jpg.jpg",
+    "localFile": "./images/map-al-andalus-siglos-xii-xiii-jpg.jpg",
     "width": 1400,
     "height": 703,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Al-Andalus,_siglos_XII-XIII.jpg",
@@ -416,7 +417,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "map-mapa-de-al-andalus-ibn-hawqal-c-950-jpg",
     "subject": "maps",
-    "localFile": "/images/map-mapa-de-al-andalus-ibn-hawqal-c-950-jpg.jpg",
+    "localFile": "./images/map-mapa-de-al-andalus-ibn-hawqal-c-950-jpg.jpg",
     "width": 1400,
     "height": 1184,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mapa_de_al-Andalus,_Ibn_Hawqal_(c._950).jpg",
@@ -428,7 +429,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "almeria-1",
     "subject": "almeria",
-    "localFile": "/images/almeria-1.jpg",
+    "localFile": "./images/almeria-1.jpg",
     "width": 1200,
     "height": 625,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alcazaba_1,_Almeria,_Spain.jpg",
@@ -440,7 +441,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "almeria-2",
     "subject": "almeria",
-    "localFile": "/images/almeria-2.jpg",
+    "localFile": "./images/almeria-2.jpg",
     "width": 1200,
     "height": 1705,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Alcazaba_tower,_Almeria,_Spain.jpg",
@@ -452,7 +453,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "zaragoza-1",
     "subject": "zaragoza",
-    "localFile": "/images/zaragoza-1.jpg",
+    "localFile": "./images/zaragoza-1.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zaragoza_-_Aljaferia_4.JPG",
@@ -464,7 +465,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "zaragoza-2",
     "subject": "zaragoza",
-    "localFile": "/images/zaragoza-2.jpg",
+    "localFile": "./images/zaragoza-2.jpg",
     "width": 1200,
     "height": 1600,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zaragoza_-_Aljaferia_5.JPG",
@@ -476,7 +477,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "art-1",
     "subject": "art",
-    "localFile": "/images/art-1.jpg",
+    "localFile": "./images/art-1.jpg",
     "width": 1200,
     "height": 1819,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pyxid_Al_Mughira_OA_4068.jpg",
@@ -488,7 +489,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "art-2",
     "subject": "art",
-    "localFile": "/images/art-2.jpg",
+    "localFile": "./images/art-2.jpg",
     "width": 1200,
     "height": 900,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:BLW_Openwork_Container_(Pyxis).jpg",
@@ -500,7 +501,7 @@ export const images: HistoricalImage[] = [
   {
     "id": "art-3",
     "subject": "art",
-    "localFile": "/images/art-3.jpg",
+    "localFile": "./images/art-3.jpg",
     "width": 1200,
     "height": 1599,
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pyxis_Khalaf_Met_L2011.46.7.jpg",

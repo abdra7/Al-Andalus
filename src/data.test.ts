@@ -173,6 +173,14 @@ describe("image dataset", () => {
     expect(getImage("nonexistent")).toBeUndefined();
   });
 
+  it("every image has an Arabic caption for alt text", () => {
+    for (const img of images) {
+      expect(img.arabicCaption, `${img.id} missing arabicCaption`).toBeTruthy();
+      // must contain Arabic script
+      expect(/[\u0600-\u06FF]/.test(img.arabicCaption), `${img.id} caption not Arabic`).toBe(true);
+    }
+  });
+
   it("every major city references an existing image", () => {
     for (const c of cities) {
       if (c.imageId) {

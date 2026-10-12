@@ -40,20 +40,20 @@ function SourceList({ sources }: { sources: { title: string; url: string }[] }) 
   );
 }
 
-function ImageFigure({ imageId, caption }: { imageId: string; caption?: string }) {
+function ImageFigure({ imageId }: { imageId: string }) {
   const img = getImage(imageId);
   if (!img) return null;
   return (
     <figure className="info-figure">
       <img
         src={img.localFile}
-        alt={img.description || caption || "صورة تاريخية"}
+        alt={img.arabicCaption}
         loading="lazy"
         width={img.width}
         height={img.height}
       />
       <figcaption>
-        {caption || img.description}
+        {img.arabicCaption}
         {" — "}
         <a href={img.sourceUrl} target="_blank" rel="noopener noreferrer">
           ويكيميديا كومنز

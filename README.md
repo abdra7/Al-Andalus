@@ -10,11 +10,13 @@ A production Arabic RTL web application that presents the history of Al-Andalus 
 
 - **Interactive map** (Leaflet + a **self-hosted parchment relief basemap**, no third-party tiles) with accurately positioned city markers, Andalusian Arabic names for seas, rivers and regions (بحر الروم، البحر المحيط، بحر الزقاق، الوادي الكبير…), and a period filter that dims cities outside the selected era.
 - **Horizontal timeline** with 19 verified milestones, category filters (الفتوح، السياسة، الثقافة، العلوم، العمارة، السقوط), and keyboard-accessible selection.
-- **City panel** (المدن الرئيسية) with the 8 principal historical cities: قرطبة، غرناطة، إشبيلية، طليطلة، الزهراء، مالقة، بلنسية، المرية.
-- **Information panel** (تفاصيل المدينة والحدث) with sourced narratives, event lists, verified historical images with attribution, and source links.
+- **City panel** (المدن الرئيسية) with 9 cities: قرطبة، غرناطة، إشبيلية، طليطلة، الزهراء، مالقة، بلنسية، المرية، سرقسطة.
+- **Information panel** for a city, an event or a figure: sourced narrative, landmarks with dates, events, a **photo gallery with a full-screen viewer**, related figures, "further reading" pointing to the bookshelf, and source links.
+- **28 historical figures** (طارق بن زياد → أبو عبد الله الصغير) with dates, works, a related monument/artwork image (never an invented portrait) and sources; listed by period in the library and searchable by alternative names (Averroes, Boabdil, ابن ميمون…).
 - **Arabic search** with tolerant matching (hamza/alef/ta-marbuta normalization, Latin accent stripping) across cities, events, figures, periods, and books.
 - **Historical library** (المكتبة) with a **bookshelf of recommended Arabic books** (عنان، السرجاني، السويدان، مؤنس، الحجي) grouped by reading level, plus topics: الدول والحقب، المدن، الشخصيات، العمارة، العلوم، المصادر.
-- **Eras view** (الحقب التاريخية) with expandable period cards.
+- **Eras view** (الحقب التاريخية): each period opens to its capital, rulers with reign years, dated landmarks, a historical map, its figures, its timeline events, and the matching volume of عنان's «دولة الإسلام في الأندلس» (or مؤنس's «فجر الأندلس») on the shelf.
+- **Background music** — «جادكَ الغيثُ» (muwashshah, words by لسان الدين بن الخطيب), published with the site owner's permission: loops, starts on the visitor's first interaction, play/pause, mute and volume controls in the header, choices remembered per visitor.
 - **Responsive** desktop / tablet / mobile layouts with a mobile bottom drawer and tab bar.
 
 ## Technology
@@ -33,7 +35,7 @@ A production Arabic RTL web application that presents the history of Al-Andalus 
 ```bash
 npm install
 npm run dev        # http://localhost:5188
-npm test           # 41 tests: data integrity, search, fonts, basemap, books
+npm test           # 55 tests: data integrity, references, search, fonts, basemap, images, music
 npm run typecheck  # strict TypeScript
 npm run build      # production build → dist/
 npm run preview    # serve the production build locally
@@ -41,12 +43,24 @@ npm run preview    # serve the production build locally
 
 ## Adding historical records
 
-All historical content lives in **`src/data/history.ts`** — never inline it in components:
+All historical content lives in **`src/data/`** — never inline it in components:
 
-1. **A new city** — append a `City` object to the `cities` array. Required fields: `id`, `name`, `latinName`, `lat`, `lng`, `significance`, `description`, `periods`, `sources`. Add it to `majorCity: true` to surface it in the main panel.
-2. **A new timeline event** — append a `TimelineEvent` to `timelineEvents` with `year`, `yearLabel`, `title`, `description`, `category`, and at least one `source`.
-3. **A new period** — append to `periods`. Note: periods must not overlap on their boundary year (`periodAtYear` returns the first match).
-4. **A new figure** — append to `figures`.
+| File | Contents |
+|---|---|
+| `types.ts` | the data model (Period, City, Figure, TimelineEvent, Landmark, BookRef…) |
+| `sources.ts` | shared sources + `wiki()` helper; cite only pages you have checked |
+| `periods.ts` | 7 periods: capital, rulers, landmarks, map, further reading |
+| `cities.ts` | 9 cities: narrative, landmarks, gallery, events |
+| `figures.ts` | 28 figures |
+| `history.ts` | timeline (26 events), library topics, helpers, search index; re-exports the rest |
+| `books.ts` | the Arabic bookshelf |
+| `images.ts` / `images.json` | **generated** by `scripts/images/build_images.py` |
+
+
+1. **A new city** — append a `City` object to `cities.ts`. Required fields: `id`, `name`, `latinName`, `lat`, `lng`, `significance`, `description`, `periods`, `sources`. Add it to `majorCity: true` to surface it in the main panel.
+2. **A new timeline event** — append a `TimelineEvent` to `timelineEvents` in `history.ts` with `year`, `yearLabel`, `title`, `description`, `category`, and at least one `source`.
+3. **A new period** — append to `periods.ts`. Note: periods must not overlap on their boundary year (`periodAtYear` returns the first match).
+4. **A new figure** — append to `figures.ts` (`periodId` required; `imageId` must be a monument or artwork, captioned as such).
 5. **Library entries** — append to `libraryTopics`.
 6. **Books** — append to `books` in `src/data/books.ts` (title, author, level, years covered, periods, catalogue source). Link to catalogue pages (Goodreads, WorldCat, CiNii, publisher) — never to PDF mirrors.
 
@@ -54,13 +68,18 @@ All historical content lives in **`src/data/history.ts`** — never inline it in
 
 ### Adding images
 
-Images are fetched from Wikimedia Commons with license verification:
+Images come from Wikimedia Commons with licence checks (CC0, public domain, CC BY, CC BY-SA only):
 
 ```bash
-node scripts/fetch-all-images.mjs   # rebuilds src/data/images.ts from Commons
+node scripts/fetch-more-images.mjs                 # on a machine that can reach Wikimedia → data/incoming-images/
+python3 scripts/images/build_images.py data/incoming-images   # review, caption, convert
 ```
 
-Only CC0 / Public domain / CC BY / CC BY-SA images are accepted. Each image records: `id`, `localFile`, `sourceUrl`, `license`, `artist`, `description`. Full attribution is rendered in the UI caption and recorded in `src/data/images.json`.
+`build_images.py` holds the curated list of downloads to keep and an Arabic caption for **every** image (written after looking at the picture and its Commons description). It converts everything to WebP (≤1200 px, plus 360 px thumbnails in `public/images/thumbs/`) and regenerates `images.ts`/`images.json`. 72 images, ~10 MB. Three earlier pictures were removed as misattributed (an Antequera fortress labelled Málaga, Madrid's Puente de Toledo labelled Toledo, a garden plant), and the Alhambra captions — previously shifted by one — were corrected.
+
+### Music
+
+`public/audio/andalus-music.m4a` — AAC 80 kbps, loudness-normalised to about −20 LUFS with 2–3 s fades so the loop is smooth (8.8 MB, `preload="none"` so it downloads only when played). Published with the site owner's permission. The player (`src/components/MusicPlayer.tsx`) stores the visitor's choice (on/off, volume, mute) in `localStorage`; on iOS, where web pages cannot set the volume, the slider is replaced by a hint to use the device buttons.
 
 ## Typography licensing (important)
 

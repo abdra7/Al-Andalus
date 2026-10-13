@@ -1,0 +1,36 @@
+{
+  "minNativeZoom": 5,
+  "maxNativeZoom": 8,
+  "ranges": {
+    "5": [
+      10,
+      20,
+      8,
+      15
+    ],
+    "6": [
+      25,
+      37,
+      20,
+      28
+    ],
+    "7": [
+      55,
+      70,
+      42,
+      54
+    ],
+    "8": [
+      114,
+      137,
+      88,
+      105
+    ]
+  },
+  "tileSize": 256,
+  "format": "webp",
+  "sources": [
+    "Natural Earth 1:10m (public domain)",
+    "NASA Blue Marble Shaded Relief & Bathymetry (public domain)"
+  ]
+}

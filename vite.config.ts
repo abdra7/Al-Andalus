@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// The app is deployed beneath the Arabic subpath /الأندلس/ on abdulrahim.page.
+// The app is deployed beneath the subpath /al-andalus/ on abdulrahim.page
+// (the old Arabic path /الأندلس/ redirects there).
 // relative base so that assets resolve correctly from the deployed subdirectory.
 export default defineConfig({
   base: "./",

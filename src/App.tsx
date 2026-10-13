@@ -47,19 +47,29 @@ export default function App() {
   const [activeCategories, setActiveCategories] = useState<Category[]>([...CATEGORIES]);
   const [mobilePanel, setMobilePanel] = useState<"cities" | "info" | null>(null);
 
-  // hash routing
+  // hash routing — the home page has no hash, so its link stays clean (…/al-andalus/)
   useEffect(() => {
+    if (window.location.hash === "#/home") history.replaceState(null, "", window.location.pathname);
     const onHash = () => {
+      if (window.location.hash === "#/home") history.replaceState(null, "", window.location.pathname);
       const v = viewFromHash(window.location.hash);
       setView(v);
       setNavOpen(false);
     };
     window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    window.addEventListener("popstate", onHash);
+    return () => {
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("popstate", onHash);
+    };
   }, []);
 
   const navigate = useCallback((v: View) => {
-    window.location.hash = `#/${v}`;
+    if (v === "home") {
+      if (window.location.hash) history.pushState(null, "", window.location.pathname);
+    } else {
+      window.location.hash = `#/${v}`;
+    }
     setView(v);
     setNavOpen(false);
   }, []);
@@ -164,7 +174,15 @@ export default function App() {
 
       <header className="site-header">
         <div className="site-header__inner">
-          <a className="site-header__brand" href="#/home" aria-label="الصفحة الرئيسية">
+          <a
+            className="site-header__brand"
+            href="./"
+            aria-label="الصفحة الرئيسية"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("home");
+            }}
+          >
             <span className="site-header__title">الأندلس</span>
             <span className="site-header__sub">رحلة عبر الزمن</span>
           </a>
@@ -188,12 +206,12 @@ export default function App() {
               ) : (
                 <a
                   key={item.id}
-                  href={`#/${item.id}`}
+                  href={item.id === "home" ? "./" : `#/${item.id}`}
                   className="site-nav__link"
                   aria-current={view === item.id ? "page" : undefined}
-                  onClick={() => {
-                    setView(item.id);
-                    setNavOpen(false);
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(item.id);
                   }}
                 >
                   {item.label}

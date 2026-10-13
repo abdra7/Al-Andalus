@@ -19,9 +19,9 @@ describe("self-hosted fonts", () => {
     expect(css).toMatch(/font-family: 'Markazi Text'/);
   });
 
-  it("every url() is root-absolute under /الأندلس/fonts/ (CSS lives in /الأندلس/assets/)", () => {
+  it("every url() is root-absolute under /al-andalus/fonts/ (CSS lives in /al-andalus/assets/)", () => {
     expect(urls.length).toBeGreaterThan(0);
-    for (const u of urls) expect(u, u).toMatch(/^\/الأندلس\/fonts\/[a-z0-9-]+\.woff2$/);
+    for (const u of urls) expect(u, u).toMatch(/^\/al-andalus\/fonts\/[a-z0-9-]+\.woff2$/);
   });
 
   it("every referenced woff2 exists in public/fonts", () => {
@@ -89,7 +89,7 @@ describe("self-hosted basemap", () => {
     expect(count).toBeGreaterThan(500);
   });
 
-  it("tile URLs are relative (resolve under the /الأندلس/ subpath) and never hit a third party", () => {
+  it("tile URLs are relative (resolve under the /al-andalus/ subpath) and never hit a third party", () => {
     const [x, y] = tileXY(37.88, -4.78, 7); // Córdoba
     expect(basemapTileUrl(7, x, y)).toBe(`./tiles/7/${x}/${y}.webp`);
     expect(basemapTileUrl(7, 0, 0)).toMatch(/^data:image\/svg\+xml/);

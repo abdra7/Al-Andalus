@@ -2,7 +2,7 @@
 
 An interactive Arabic historical atlas exploring Al-Andalus through maps, timelines, cities, and verified historical sources.
 
-**Live:** https://abdulrahim.page/%D8%A7%D9%84%D8%A3%D9%86%D8%AF%D9%84%D8%B3/ (`https://abdulrahim.page/الأندلس/`)
+**Live:** https://abdulrahim.page/al-andalus/ — the old Arabic address `https://abdulrahim.page/الأندلس/` redirects there.
 
 ## What this is
 
@@ -28,7 +28,7 @@ A production Arabic RTL web application that presents the history of Al-Andalus 
 | Map | Leaflet 1.9 + self-hosted WebP tiles (`public/tiles`, z5–8) | No API key, no tile server to break, no visitor IPs sent to third parties |
 | Fonts | Alexandria + Markazi Text (self-hosted variable woff2, OFL) | Free stand-ins for Thmanyah — see typography below |
 | Tests | Vitest | Data integrity, search normalisation, font URLs, tile coverage, books |
-| Deploy | Static build → `الأندلس/` subdirectory of the `abdra7.github.io` repo → GitHub Pages | Coexists with the existing portfolio on the same custom domain |
+| Deploy | Static build → `al-andalus/` subdirectory of the `abdra7.github.io` repo → GitHub Pages | Coexists with the existing portfolio on the same custom domain |
 
 ## Local development
 
@@ -98,7 +98,7 @@ Web embedding (`@font-face`) is explicitly prohibited, so self-hosting or redist
 - Copyrights: Alexandria © 2022 The Alexandria Project Authors; Markazi Text © 2017 The Markazi Text Project Authors. Licence text ships in `public/fonts/LICENSE-OFL.txt`.
 - Markazi Text has a small apparent size, normalised with `size-adjust: 116%` in its `@font-face`.
 - Only woff2 binaries are committed (4 files, ~128 KB total). Filenames carry a `-v5` suffix: bump it to bust caches.
-- **Every `@font-face` URL must be root-absolute** (`/الأندلس/fonts/…`): the CSS bundle is served from `/الأندلس/assets/`, so a relative `./fonts/…` would resolve to `/الأندلس/assets/fonts/…` and 404. `src/site.test.ts` enforces this and checks the files exist.
+- **Every `@font-face` URL must be root-absolute** (`/al-andalus/fonts/…`): the CSS bundle is served from `/al-andalus/assets/`, so a relative `./fonts/…` would resolve to `/al-andalus/assets/fonts/…` and 404. `src/site.test.ts` enforces this and checks the files exist.
 - Arabic text is never letter-spaced (it breaks cursive joining).
 
 If Thmanyah ever grants web-embedding authorization, swap the families in `src/styles/fonts.css` — the three role variables stay the same.
@@ -118,22 +118,24 @@ The map no longer depends on CARTO: in 2026 CARTO's keyless basemap endpoints be
 github.com/abdra7/Al-Andalus (source of truth)
         │  npm run build
         ▼
-      dist/  (relative: ./assets/…, ./images/…, ./tiles/… — fonts root-absolute: /الأندلس/fonts/…)
-        │  copied into the الأندلس/ subdirectory
+      dist/  (relative: ./assets/…, ./images/…, ./tiles/… — fonts root-absolute: /al-andalus/fonts/…)
+        │  copied into the al-andalus/ subdirectory
         ▼
 github.com/abdra7/abdra7.github.io (the site serving abdulrahim.page)
         │  GitHub Pages
         ▼
-https://abdulrahim.page/الأندلس
+https://abdulrahim.page/al-andalus/
 ```
 
-Why this architecture: `abdulrahim.page` is served by GitHub Pages from the `abdra7.github.io` repository (CNAME verified). GitHub Pages serves Arabic UTF-8 paths correctly (verified with an HTTP probe: `/الأندلس/…` returns 200 for both the encoded and raw forms). Building with `base: "./"` produces relative asset URLs so the app works beneath any subpath without broken references.
+Why this architecture: `abdulrahim.page` is served by GitHub Pages from the `abdra7.github.io` repository (CNAME verified). Building with `base: "./"` produces relative asset URLs, so the app works beneath any subpath; only the `@font-face` URLs are root-absolute.
+
+**Why `/al-andalus/` and not `/الأندلس/`:** URLs may only contain ASCII, so an Arabic folder name is percent-encoded (`/%D8%A7%D9%84…`) whenever the link is copied or shared. The app therefore lives at `/al-andalus/`. The Pages repo keeps a one-file `الأندلس/index.html` that redirects old links (including their `#/…` section) to the new address. The home page itself has no hash, so the shared link is simply `https://abdulrahim.page/al-andalus/`.
 
 Deploy steps (documented and reproducible):
 
 ```bash
 npm run build
-# copy dist/* into the الأندلس/ directory of a clone of abdra7/abdra7.github.io
+# copy dist/* into the al-andalus/ directory of a clone of abdra7/abdra7.github.io
 # commit + push → GitHub Pages rebuilds automatically
 ```
 

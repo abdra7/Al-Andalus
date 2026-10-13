@@ -3,7 +3,7 @@
 // (National Institute of Informatics, Japan) library catalogue. Links point to catalogue
 // pages only — never to unauthorised PDF copies.
 
-import type { Source } from "./history";
+import type { Source } from "./types";
 
 export type BookLevel = "reference" | "general" | "period";
 

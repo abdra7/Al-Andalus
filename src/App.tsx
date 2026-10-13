@@ -6,14 +6,15 @@ import { Timeline, CATEGORIES } from "./components/Timeline";
 import { SearchModal } from "./components/SearchModal";
 import { LibraryView } from "./components/LibraryView";
 import { HomeView } from "./components/HomeView";
+import { ErasView } from "./components/ErasView";
+import { MusicPlayer } from "./components/MusicPlayer";
 import { Icon } from "./components/Icon";
 import {
-  cities,
   getCity,
+  getFigure,
   getTimelineEvent,
-  timelineEvents,
-  periods as PERIODS,
   type City,
+  type Figure,
   type TimelineEvent,
   type SearchEntry,
 } from "./data/history";
@@ -42,6 +43,7 @@ export default function App() {
 
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [selectedFigureId, setSelectedFigureId] = useState<string | null>(null);
   const [activeCategories, setActiveCategories] = useState<Category[]>([...CATEGORIES]);
   const [mobilePanel, setMobilePanel] = useState<"cities" | "info" | null>(null);
 
@@ -65,14 +67,37 @@ export default function App() {
   const selectCity = useCallback((city: City) => {
     setSelectedCityId(city.id);
     setSelectedEventId(null);
+    setSelectedFigureId(null);
     if (window.innerWidth <= 1024) setMobilePanel("info");
   }, []);
 
   const selectEvent = useCallback((event: TimelineEvent) => {
     setSelectedEventId(event.id);
     setSelectedCityId(null);
+    setSelectedFigureId(null);
     if (window.innerWidth <= 1024) setMobilePanel("info");
   }, []);
+
+  const selectFigure = useCallback((figure: Figure) => {
+    setSelectedFigureId(figure.id);
+    setSelectedCityId(null);
+    setSelectedEventId(null);
+    if (window.innerWidth <= 1024) setMobilePanel("info");
+  }, []);
+
+  /** Jump to a book on the library shelf and focus it. */
+  const openBook = useCallback(
+    (bookId: string) => {
+      navigate("library");
+      window.setTimeout(() => {
+        const el = document.getElementById(`book-${bookId}`);
+        const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        el?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+        el?.focus({ preventScroll: true });
+      }, 80);
+    },
+    [navigate],
+  );
 
   const toggleCategory = useCallback((cat: Category) => {
     setActiveCategories((prev) =>
@@ -87,13 +112,14 @@ export default function App() {
 
   const selectedCity = selectedCityId ? getCity(selectedCityId) ?? null : null;
   const selectedEvent = selectedEventId ? getTimelineEvent(selectedEventId) ?? null : null;
+  const selectedFigure = selectedFigureId ? getFigure(selectedFigureId) ?? null : null;
 
   const handleSearchSelect = useCallback(
     (entry: SearchEntry) => {
       setSearchOpen(false);
       if (entry.kind === "city" && entry.cityId) {
-        setSelectedCityId(entry.cityId);
-        setSelectedEventId(null);
+        const c = getCity(entry.cityId);
+        if (c) selectCity(c);
         navigate("explore");
       } else if (entry.kind === "event") {
         const ev = getTimelineEvent(entry.id.replace(/^event-/, ""));
@@ -102,21 +128,18 @@ export default function App() {
           navigate("explore");
         }
       } else if (entry.kind === "book") {
-        navigate("library");
-        window.setTimeout(() => {
-          const el = document.getElementById(entry.id);
-          el?.scrollIntoView({ block: "center" });
-          el?.focus({ preventScroll: true });
-        }, 60);
-      } else if (entry.kind === "figure" && entry.cityId) {
-        setSelectedCityId(entry.cityId);
-        setSelectedEventId(null);
-        navigate("explore");
+        openBook(entry.id.replace(/^book-/, ""));
+      } else if (entry.kind === "figure") {
+        const f = getFigure(entry.id.replace(/^figure-/, ""));
+        if (f) {
+          selectFigure(f);
+          navigate("explore");
+        }
       } else {
         navigate("eras");
       }
     },
-    [navigate, selectEvent],
+    [navigate, selectCity, selectEvent, selectFigure, openBook],
   );
 
   // keyboard shortcut: "/" opens search
@@ -145,17 +168,6 @@ export default function App() {
             <span className="site-header__title">الأندلس</span>
             <span className="site-header__sub">رحلة عبر الزمن</span>
           </a>
-
-          <button
-            type="button"
-            className="header-burger"
-            aria-expanded={navOpen}
-            aria-controls="site-nav"
-            aria-label={navOpen ? "إغلاق القائمة" : "فتح القائمة"}
-            onClick={() => setNavOpen((o) => !o)}
-          >
-            <Icon name={navOpen ? "close" : "menu"} />
-          </button>
 
           <nav id="site-nav" className="site-nav" data-open={navOpen} aria-label="التنقل الرئيسي">
             {NAV_ITEMS.map((item) =>
@@ -189,6 +201,20 @@ export default function App() {
               ),
             )}
           </nav>
+
+          <div className="site-header__tools">
+            <MusicPlayer />
+            <button
+              type="button"
+              className="header-burger"
+              aria-expanded={navOpen}
+              aria-controls="site-nav"
+              aria-label={navOpen ? "إغلاق القائمة" : "فتح القائمة"}
+              onClick={() => setNavOpen((o) => !o)}
+            >
+              <Icon name={navOpen ? "close" : "menu"} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -215,16 +241,32 @@ export default function App() {
               <MapView
                 selectedCityId={selectedCityId}
                 selectedYear={selectedYear}
-                eventCityId={selectedEvent?.cityId ?? null}
+                eventCityId={selectedEvent?.cityId ?? selectedFigure?.cityId ?? null}
                 onSelectCity={selectCity}
               />
-              <InfoPanel city={selectedCity} event={selectedEvent} />
+              <InfoPanel
+                city={selectedCity}
+                event={selectedEvent}
+                figure={selectedFigure}
+                onSelectCity={selectCity}
+                onSelectFigure={selectFigure}
+                onOpenBook={openBook}
+              />
             </div>
             <MobileDrawer panel={mobilePanel} onClose={() => setMobilePanel(null)}>
               {mobilePanel === "cities" && (
                 <CityPanel selectedCityId={selectedCityId} onSelectCity={selectCity} />
               )}
-              {mobilePanel === "info" && <InfoPanel city={selectedCity} event={selectedEvent} />}
+              {mobilePanel === "info" && (
+                <InfoPanel
+                  city={selectedCity}
+                  event={selectedEvent}
+                  figure={selectedFigure}
+                  onSelectCity={selectCity}
+                  onSelectFigure={selectFigure}
+                  onOpenBook={openBook}
+                />
+              )}
             </MobileDrawer>
             <nav className="mobile-tabbar" aria-label="أدوات الخريطة">
               <button
@@ -263,14 +305,23 @@ export default function App() {
               selectEvent(event);
               navigate("explore");
             }}
+            onSelectFigure={(figure) => {
+              selectFigure(figure);
+              navigate("explore");
+            }}
+            onOpenBook={openBook}
           />
         )}
 
         {view === "library" && (
           <LibraryView
             onSelectCity={(cityId) => {
-              setSelectedCityId(cityId);
-              setSelectedEventId(null);
+              const c = getCity(cityId);
+              if (c) selectCity(c);
+              navigate("explore");
+            }}
+            onSelectFigure={(figure) => {
+              selectFigure(figure);
               navigate("explore");
             }}
           />
@@ -338,96 +389,6 @@ function MobileDrawer({
         <span aria-hidden="true" />
       </button>
       <div className="mobile-drawer__body">{children}</div>
-    </div>
-  );
-}
-
-/** Eras view: all periods as cards with their events. */
-function ErasView({
-  onSelectCity,
-  onSelectEvent,
-}: {
-  onSelectCity: (city: City) => void;
-  onSelectEvent: (event: TimelineEvent) => void;
-}) {
-  const [openPeriod, setOpenPeriod] = useState<string | null>(null);
-  return (
-    <div className="library">
-      <div className="library__intro">
-        <div className="hero__ornament" aria-hidden="true">❦</div>
-        <h1>الحقب التاريخية للأندلس</h1>
-        <p>
-          {PERIODS.length} مراحل كبرى من الفتح الإسلامي حتى سقوط غرناطة. اختر حقبة لعرض أحداثها،
-          ثم انتقل إلى الخريطة التفاعلية لاستكشاف مدنها.
-        </p>
-      </div>
-      <div className="library-grid">
-        {PERIODS.map((p) => {
-          const evs = timelineEvents.filter((e) => e.year >= p.startYear && e.year <= p.endYear);
-          const open = openPeriod === p.id;
-          return (
-            <section className="library-card era-card" key={p.id} style={{ borderTopColor: p.color }}>
-              <h2 className="era-card__heading">
-                <button
-                  type="button"
-                  className="library-card__title era-card__toggle"
-                  aria-expanded={open}
-                  aria-controls={`era-${p.id}`}
-                  onClick={() => setOpenPeriod(open ? null : p.id)}
-                >
-                  <Icon name="crown" /> {p.name}
-                  <span className="era-card__years">
-                    {p.startYear} — {p.endYear}
-                  </span>
-                  <Icon name={open ? "chevron-up" : "chevron-down"} className="era-card__chev" />
-                </button>
-              </h2>
-              <p className="era-card__summary">{p.summary}</p>
-              {open && (
-                <div id={`era-${p.id}`}>
-                  <p className="era-card__desc">{p.description}</p>
-                  <ul>
-                    {evs.map((e) => (
-                      <li key={e.id}>
-                        <button
-                          type="button"
-                          className="library-card__link"
-                          onClick={() => {
-                            onSelectEvent(e);
-                          }}
-                        >
-                          {e.yearLabel} — {e.title}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="era-card__more">
-                    <button
-                      type="button"
-                      className="library-card__link"
-                      onClick={() => {
-                        const city = cities.find((c) => c.periods.includes(p.id));
-                        if (city) onSelectCity(city);
-                      }}
-                    >
-                      استكشف مدن هذه الحقبة ←
-                    </button>
-                  </div>
-                </div>
-              )}
-              <ul className="info-sources era-card__sources">
-                {p.sources.slice(0, 2).map((s, i) => (
-                  <li key={i}>
-                    <a href={s.url} target="_blank" rel="noopener noreferrer">
-                      {s.title} <Icon name="external-link" size={12} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
-      </div>
     </div>
   );
 }

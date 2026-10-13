@@ -29,10 +29,13 @@ function score(entry: SearchEntry, query: string): number {
   if (!q) return 0;
   const title = normalizeArabic(entry.title);
   const latin = normalizeArabic(entry.latinName ?? "");
+  const aliases = (entry.aliases ?? []).map(normalizeArabic);
   const desc = normalizeArabic(entry.description);
   if (title.startsWith(q)) return 100;
   if (title.includes(q)) return 80;
+  if (aliases.some((a) => a.startsWith(q))) return 75;
   if (latin.startsWith(q)) return 70;
+  if (aliases.some((a) => a.includes(q))) return 65;
   if (latin.includes(q)) return 60;
   if (desc.includes(q)) return 30;
   return 0;

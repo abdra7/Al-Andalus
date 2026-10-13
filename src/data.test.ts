@@ -59,6 +59,25 @@ describe("historical data integrity", () => {
     }
   });
 
+  it("cities sit at their real positions (±0.15°)", () => {
+    // Reference coordinates of the historic centres (WGS84).
+    const ref: Record<string, [number, number]> = {
+      cordoba: [37.879, -4.78],
+      granada: [37.177, -3.599],
+      seville: [37.389, -5.984],
+      toledo: [39.857, -4.024],
+      zahra: [37.888, -4.867],
+      malaga: [36.721, -4.421],
+      valencia: [39.47, -0.376],
+      almeria: [36.834, -2.464],
+    };
+    for (const [id, [lat, lng]] of Object.entries(ref)) {
+      const c = getCity(id)!;
+      expect(Math.abs(c.lat - lat), `${id} lat`).toBeLessThan(0.15);
+      expect(Math.abs(c.lng - lng), `${id} lng`).toBeLessThan(0.15);
+    }
+  });
+
   it("every city has at least one source", () => {
     for (const c of cities) {
       expect(c.sources.length, `${c.id} has no sources`).toBeGreaterThan(0);

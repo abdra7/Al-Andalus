@@ -42,13 +42,23 @@ export function SearchModal({ open, onClose, onSelect }: SearchModalProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setQuery("");
-      setActiveIndex(0);
-      setTimeout(() => inputRef.current?.focus(), 30);
-    }
+    if (!open) return;
+    returnFocusRef.current = document.activeElement as HTMLElement | null;
+    setQuery("");
+    setActiveIndex(0);
+    const t = window.setTimeout(() => inputRef.current?.focus(), 30);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.clearTimeout(t);
+      document.body.style.overflow = prevOverflow;
+      // give focus back to whatever opened the dialog
+      returnFocusRef.current?.focus?.();
+    };
   }, [open]);
 
   const results = useMemo(() => {
@@ -80,9 +90,29 @@ export function SearchModal({ open, onClose, onSelect }: SearchModalProps) {
       const entry = results[activeIndex];
       if (entry) onSelect(entry);
     } else if (e.key === "Escape") {
+      e.preventDefault();
       onClose();
+    } else if (e.key === "Tab") {
+      // keep focus inside the dialog
+      const focusables = boxRef.current?.querySelectorAll<HTMLElement>("input, button");
+      if (!focusables || focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   };
+
+  const activeId = results[activeIndex] ? `search-opt-${results[activeIndex].id}` : undefined;
+
+  useEffect(() => {
+    if (activeId) document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
+  }, [activeId]);
 
   if (!open) return null;
 
@@ -96,7 +126,7 @@ export function SearchModal({ open, onClose, onSelect }: SearchModalProps) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="search-modal__box" onKeyDown={handleKey}>
+      <div className="search-modal__box" ref={boxRef} onKeyDown={handleKey}>
         <div className="search-modal__input-wrap">
           <Icon name="search" />
           <input
@@ -106,22 +136,31 @@ export function SearchModal({ open, onClose, onSelect }: SearchModalProps) {
             placeholder="ابحث عن مدينة أو حدث أو شخصية…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="حقل البحث"
+            aria-label="ابحث في المدن والأحداث والشخصيات والكتب"
+            role="combobox"
+            aria-expanded={results.length > 0}
+            aria-controls="search-results"
+            aria-activedescendant={activeId}
+            aria-autocomplete="list"
             autoComplete="off"
           />
-          <button type="button" className="chip" onClick={onClose} aria-label="إغلاق البحث">
-            <Icon name="close" size={12} />
+          <button type="button" className="search-modal__close" onClick={onClose} aria-label="إغلاق البحث">
+            <Icon name="close" size={18} />
           </button>
         </div>
+        <p className="sr-only" role="status" aria-live="polite">
+          {query.trim() ? `${results.length} نتيجة` : ""}
+        </p>
         {results.length === 0 ? (
-          <p className="search-empty">لا توجد نتائج مطابقة. جرّب كلمة أخرى.</p>
+          <p className="search-empty">لا توجد نتائج مطابقة. جرّب كلمة أخرى أو اسماً لاتينياً مثل Córdoba.</p>
         ) : (
-          <ul className="search-results" role="listbox" aria-label="نتائج البحث">
+          <ul className="search-results" id="search-results" role="listbox" aria-label="نتائج البحث">
             {results.map((entry, i) => {
               const city = entry.cityId ? getCity(entry.cityId) : undefined;
               return (
                 <li
                   key={entry.id}
+                  id={`search-opt-${entry.id}`}
                   role="option"
                   aria-selected={i === activeIndex}
                   className="search-results__item"
@@ -137,7 +176,9 @@ export function SearchModal({ open, onClose, onSelect }: SearchModalProps) {
                           ? "حدث"
                           : entry.kind === "figure"
                             ? "شخصية"
-                            : "حقبة"}
+                            : entry.kind === "book"
+                              ? "كتاب"
+                              : "حقبة"}
                     </span>
                     {entry.yearLabel && <span>{entry.yearLabel}</span>}
                     {city && <span>{city.name}</span>}

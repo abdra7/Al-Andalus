@@ -11,11 +11,10 @@ export function InfoPanel({ city, event }: InfoPanelProps) {
   if (!city && !event) {
     return (
       <aside className="info-panel" aria-label="تفاصيل المدينة والحدث">
-        <p className="info-panel__empty">
-          <Icon name="map-pin" size={20} />
-          <br />
-          اختر مدينة من القائمة أو حدثاً من الخط الزمني لعرض تفاصيله هنا.
-        </p>
+        <div className="info-panel__empty">
+          <Icon name="map-pin" size={28} />
+          <p>اختر مدينة من القائمة أو من الخريطة، أو حدثاً من الخط الزمني، لعرض تفاصيله هنا.</p>
+        </div>
       </aside>
     );
   }
@@ -32,7 +31,8 @@ function SourceList({ sources }: { sources: { title: string; url: string }[] }) 
       {sources.map((s, i) => (
         <li key={i}>
           <a href={s.url} target="_blank" rel="noopener noreferrer">
-            {s.title} <Icon name="external-link" size={11} />
+            {s.title} <Icon name="external-link" size={12} />
+            <span className="sr-only">(يفتح في نافذة جديدة)</span>
           </a>
         </li>
       ))}
@@ -72,7 +72,9 @@ function CityInfo({ city }: { city: City }) {
   return (
     <aside className="info-panel" aria-label="تفاصيل المدينة والحدث">
       <h2 className="info-title">{city.name}</h2>
-      <div className="info-latin">{city.latinName}</div>
+      <div className="info-latin" dir="ltr" lang="es">
+        {city.latinName}
+      </div>
       <div>
         {city.capital && <span className="info-badge">عاصمة</span>}
         {periods.map((p) => (
@@ -88,7 +90,7 @@ function CityInfo({ city }: { city: City }) {
         <h3 className="info-section__title">
           <Icon name="map-pin" /> نبذة
         </h3>
-        <p>{city.description}</p>
+        <p className="info-prose">{city.description}</p>
       </div>
 
       {city.founded && (
@@ -109,9 +111,7 @@ function CityInfo({ city }: { city: City }) {
             {city.events.map((e, i) => (
               <li className="info-events__item" key={i}>
                 <span className="info-events__year">{e.yearLabel}:</span> {e.title}
-                <div style={{ fontSize: "0.78rem", color: "var(--brown-muted)", marginTop: 2 }}>
-                  {e.description}
-                </div>
+                <div className="info-events__desc">{e.description}</div>
               </li>
             ))}
           </ul>
@@ -143,7 +143,7 @@ function EventInfo({ event }: { event: TimelineEvent }) {
         <h3 className="info-section__title">
           <Icon name="clock" /> السياق التاريخي
         </h3>
-        <p>{event.description}</p>
+        <p className="info-prose">{event.description}</p>
       </div>
 
       {city && (

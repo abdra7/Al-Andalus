@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CityPanel } from "./components/CityPanel";
 import { InfoPanel } from "./components/InfoPanel";
 import { MapView } from "./components/MapView";
@@ -101,6 +101,13 @@ export default function App() {
           selectEvent(ev);
           navigate("explore");
         }
+      } else if (entry.kind === "book") {
+        navigate("library");
+        window.setTimeout(() => {
+          const el = document.getElementById(entry.id);
+          el?.scrollIntoView({ block: "center" });
+          el?.focus({ preventScroll: true });
+        }, 60);
       } else if (entry.kind === "figure" && entry.cityId) {
         setSelectedCityId(entry.cityId);
         setSelectedEventId(null);
@@ -143,23 +150,28 @@ export default function App() {
             type="button"
             className="header-burger"
             aria-expanded={navOpen}
-            aria-label="القائمة"
+            aria-controls="site-nav"
+            aria-label={navOpen ? "إغلاق القائمة" : "فتح القائمة"}
             onClick={() => setNavOpen((o) => !o)}
           >
             <Icon name={navOpen ? "close" : "menu"} />
           </button>
 
-          <nav className="site-nav" data-open={navOpen} aria-label="التنقل الرئيسي">
+          <nav id="site-nav" className="site-nav" data-open={navOpen} aria-label="التنقل الرئيسي">
             {NAV_ITEMS.map((item) =>
               item.id === "search" ? (
                 <button
                   key={item.id}
                   type="button"
-                  className="site-nav__link"
-                  style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
-                  onClick={() => setSearchOpen(true)}
+                  className="site-nav__link site-nav__button"
+                  aria-haspopup="dialog"
+                  onClick={() => {
+                    setNavOpen(false);
+                    setSearchOpen(true);
+                  }}
                 >
-                  {item.label}
+                  <Icon name="search" /> {item.label}
+                  <kbd className="site-nav__kbd" aria-hidden="true">/</kbd>
                 </button>
               ) : (
                 <a
@@ -180,11 +192,18 @@ export default function App() {
         </div>
       </header>
 
-      <div className="main" id="main-content">
-        {view === "home" && <HomeView onExplore={() => navigate("explore")} />}
+      <main className="main" id="main-content" tabIndex={-1}>
+        {view === "home" && (
+          <HomeView
+            onExplore={() => navigate("explore")}
+            onOpenEras={() => navigate("eras")}
+            onOpenLibrary={() => navigate("library")}
+          />
+        )}
 
         {view === "explore" && (
-          <>
+          <div className="explore">
+            <h1 className="sr-only">الخريطة التفاعلية للأندلس</h1>
             <Timeline
               selectedEventId={selectedEventId}
               onSelectEvent={selectEvent}
@@ -196,55 +215,56 @@ export default function App() {
               <MapView
                 selectedCityId={selectedCityId}
                 selectedYear={selectedYear}
+                eventCityId={selectedEvent?.cityId ?? null}
                 onSelectCity={selectCity}
               />
               <InfoPanel city={selectedCity} event={selectedEvent} />
             </div>
-            <MobileDrawer
-              panel={mobilePanel}
-              onClose={() => setMobilePanel(null)}
-  
-            >
+            <MobileDrawer panel={mobilePanel} onClose={() => setMobilePanel(null)}>
               {mobilePanel === "cities" && (
                 <CityPanel selectedCityId={selectedCityId} onSelectCity={selectCity} />
               )}
               {mobilePanel === "info" && <InfoPanel city={selectedCity} event={selectedEvent} />}
             </MobileDrawer>
-            <div className="mobile-tabbar" role="tablist" aria-label="أدوات الجوال">
+            <nav className="mobile-tabbar" aria-label="أدوات الخريطة">
               <button
                 type="button"
-                role="tab"
-                aria-selected={mobilePanel === "cities"}
-                aria-pressed={mobilePanel === "cities"}
+                aria-expanded={mobilePanel === "cities"}
+                aria-controls="mobile-drawer"
                 onClick={() => setMobilePanel(mobilePanel === "cities" ? null : "cities")}
               >
-                <Icon name="map-pin" />
+                <Icon name="map-pin" size={20} />
                 المدن
               </button>
               <button
                 type="button"
-                role="tab"
-                aria-selected={mobilePanel === "info"}
-                aria-pressed={mobilePanel === "info"}
+                aria-expanded={mobilePanel === "info"}
+                aria-controls="mobile-drawer"
                 onClick={() => setMobilePanel(mobilePanel === "info" ? null : "info")}
               >
-                <Icon name="layers" />
+                <Icon name="layers" size={20} />
                 التفاصيل
               </button>
-              <button
-                type="button"
-                role="tab"
-                aria-pressed={false}
-                onClick={() => setSearchOpen(true)}
-              >
-                <Icon name="search" />
+              <button type="button" aria-haspopup="dialog" onClick={() => setSearchOpen(true)}>
+                <Icon name="search" size={20} />
                 البحث
               </button>
-            </div>
-          </>
+            </nav>
+          </div>
         )}
 
-        {view === "eras" && <ErasView onSelectCity={selectCity} onSelectEvent={selectEvent} />}
+        {view === "eras" && (
+          <ErasView
+            onSelectCity={(city) => {
+              selectCity(city);
+              navigate("explore");
+            }}
+            onSelectEvent={(event) => {
+              selectEvent(event);
+              navigate("explore");
+            }}
+          />
+        )}
 
         {view === "library" && (
           <LibraryView
@@ -255,14 +275,15 @@ export default function App() {
             }}
           />
         )}
-      </div>
+      </main>
 
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} onSelect={handleSearchSelect} />
 
       <footer className="site-footer">
         <p>
           أطلس الأندلس التفاعلي — المحتوى التاريخي مستند إلى مصادر موثوقة (اليونسكو، متحف المتروبوليتان،
-          الموسوعات المرجعية). الخرائط والصور من ويكيميديا كومنز بتراخيص موثقة.
+          الموسوعات المرجعية). الخريطة الأساسية من Natural Earth وناسا (ملكية عامة)، والصور من ويكيميديا
+          كومنز بتراخيص موثقة، والخطوط Alexandria وMarkazi Text برخصة OFL.
         </p>
         <p style={{ marginTop: 6 }}>
           <a href="https://abdulrahim.page/" target="_blank" rel="noopener noreferrer">
@@ -274,7 +295,7 @@ export default function App() {
   );
 }
 
-/** Mobile bottom drawer for panels. */
+/** Mobile bottom sheet for the city list / details panels. */
 function MobileDrawer({
   panel,
   onClose,
@@ -284,12 +305,38 @@ function MobileDrawer({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  if (typeof window === "undefined") return null;
+  const ref = useRef<HTMLDivElement>(null);
+  const open = panel !== null;
+
+  // closed sheet must be unreachable for keyboard and screen readers
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (open) el.removeAttribute("inert");
+    else el.setAttribute("inert", "");
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
   return (
-    <div className="mobile-drawer" data-open={panel !== null} aria-hidden={panel === null}>
-      <div className="mobile-drawer__handle" onClick={onClose} role="button" tabIndex={0} aria-label="إغلاق اللوحة">
-        <span />
-      </div>
+    <div
+      ref={ref}
+      id="mobile-drawer"
+      className="mobile-drawer"
+      data-open={open}
+      role="region"
+      aria-label={panel === "cities" ? "قائمة المدن" : "التفاصيل"}
+    >
+      <button type="button" className="mobile-drawer__handle" onClick={onClose} aria-label="إغلاق اللوحة">
+        <span aria-hidden="true" />
+      </button>
       <div className="mobile-drawer__body">{children}</div>
     </div>
   );
@@ -305,12 +352,12 @@ function ErasView({
 }) {
   const [openPeriod, setOpenPeriod] = useState<string | null>(null);
   return (
-    <main className="library">
+    <div className="library">
       <div className="library__intro">
         <div className="hero__ornament" aria-hidden="true">❦</div>
-        <h2>الحقب التاريخية للأندلس</h2>
+        <h1>الحقب التاريخية للأندلس</h1>
         <p>
-          تسع مراحل كبرى من الفتح الإسلامي حتى سقوط غرناطة. اختر حقبة لعرض أحداثها،
+          {PERIODS.length} مراحل كبرى من الفتح الإسلامي حتى سقوط غرناطة. اختر حقبة لعرض أحداثها،
           ثم انتقل إلى الخريطة التفاعلية لاستكشاف مدنها.
         </p>
       </div>
@@ -319,26 +366,29 @@ function ErasView({
           const evs = timelineEvents.filter((e) => e.year >= p.startYear && e.year <= p.endYear);
           const open = openPeriod === p.id;
           return (
-            <section className="library-card" key={p.id} style={{ borderTop: `3px solid ${p.color}` }}>
-              <button
-                type="button"
-                className="library-card__title"
-                style={{ width: "100%", background: "none", border: "none", borderBottom: "2px solid var(--gold)", paddingBottom: 8, cursor: "pointer", fontFamily: "inherit" }}
-                aria-expanded={open}
-                onClick={() => setOpenPeriod(open ? null : p.id)}
-              >
-                <Icon name="crown" /> {p.name}
-                <span style={{ marginInlineStart: "auto", fontSize: "0.72rem", color: "var(--brown-muted)" }}>
-                  {p.startYear} — {p.endYear}
-                </span>
-              </button>
-              <p style={{ fontSize: "0.84rem", color: "var(--brown-soft)", marginBlock: 8 }}>{p.summary}</p>
+            <section className="library-card era-card" key={p.id} style={{ borderTopColor: p.color }}>
+              <h2 className="era-card__heading">
+                <button
+                  type="button"
+                  className="library-card__title era-card__toggle"
+                  aria-expanded={open}
+                  aria-controls={`era-${p.id}`}
+                  onClick={() => setOpenPeriod(open ? null : p.id)}
+                >
+                  <Icon name="crown" /> {p.name}
+                  <span className="era-card__years">
+                    {p.startYear} — {p.endYear}
+                  </span>
+                  <Icon name={open ? "chevron-up" : "chevron-down"} className="era-card__chev" />
+                </button>
+              </h2>
+              <p className="era-card__summary">{p.summary}</p>
               {open && (
-                <>
-                  <p style={{ fontSize: "0.84rem", marginBlockEnd: 10 }}>{p.description}</p>
+                <div id={`era-${p.id}`}>
+                  <p className="era-card__desc">{p.description}</p>
                   <ul>
                     {evs.map((e) => (
-                      <li key={e.id} style={{ marginBottom: 6 }}>
+                      <li key={e.id}>
                         <button
                           type="button"
                           className="library-card__link"
@@ -351,7 +401,7 @@ function ErasView({
                       </li>
                     ))}
                   </ul>
-                  <div style={{ marginTop: 8 }}>
+                  <div className="era-card__more">
                     <button
                       type="button"
                       className="library-card__link"
@@ -363,13 +413,13 @@ function ErasView({
                       استكشف مدن هذه الحقبة ←
                     </button>
                   </div>
-                </>
+                </div>
               )}
-              <ul className="info-sources" style={{ marginTop: 10 }}>
+              <ul className="info-sources era-card__sources">
                 {p.sources.slice(0, 2).map((s, i) => (
                   <li key={i}>
                     <a href={s.url} target="_blank" rel="noopener noreferrer">
-                      {s.title} <Icon name="external-link" size={10} />
+                      {s.title} <Icon name="external-link" size={12} />
                     </a>
                   </li>
                 ))}
@@ -378,6 +428,6 @@ function ErasView({
           );
         })}
       </div>
-    </main>
+    </div>
   );
 }

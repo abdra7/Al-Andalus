@@ -21,9 +21,18 @@ export function CityPanel({ selectedCityId, onSelectCity }: CityPanelProps) {
               aria-pressed={city.id === selectedCityId}
               onClick={() => onSelectCity(city)}
             >
-              {city.name}
-              {city.capital && <span aria-label="عاصمة"> ★</span>}
-              <span className="city-list__latin">{city.latinName}</span>
+              <span className="city-list__name">
+                {city.name}
+                {city.capital && (
+                  <>
+                    <Icon name="star" size={13} className="city-list__star" />
+                    <span className="sr-only">(عاصمة)</span>
+                  </>
+                )}
+              </span>
+              <span className="city-list__latin" dir="ltr" lang="es">
+                {city.latinName}
+              </span>
             </button>
           </li>
         ))}

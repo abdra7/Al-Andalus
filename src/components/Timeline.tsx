@@ -39,53 +39,59 @@ export function Timeline({
   useEffect(() => {
     if (!selectedEventId || !trackRef.current) return;
     const el = trackRef.current.querySelector<HTMLElement>(`[data-event-id="${selectedEventId}"]`);
-    el?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    el?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", inline: "center", block: "nearest" });
   }, [selectedEventId]);
 
   const firstYear = timelineEvents.length ? timelineEvents[0].year : 0;
   const lastYear = timelineEvents.length ? timelineEvents[timelineEvents.length - 1].year : 0;
 
   return (
-    <nav className="timeline" aria-label="الخط الزمني التاريخي">
+    <section className="timeline" aria-labelledby="timeline-label">
       <div className="timeline__head">
-        <span className="timeline__label">
+        <h2 className="timeline__label" id="timeline-label">
           <Icon name="clock" /> الخط الزمني
-        </span>
+        </h2>
         <span className="timeline__range">
-          الزمن: {firstYear} — {lastYear} ميلادية
+          {firstYear} — {lastYear} ميلادية · الأحداث المعروضة: {visibleEvents.length}
         </span>
       </div>
 
       <div className="timeline__track-wrap" ref={trackRef}>
-        <div className="timeline__track" role="list">
+        <ol className="timeline__track">
           {visibleEvents.map((event) => {
             const selected = event.id === selectedEventId;
             return (
-              <button
-                key={event.id}
-                type="button"
-                role="listitem"
-                data-event-id={event.id}
-                className="timeline-item"
-                aria-pressed={selected}
-                aria-label={`${event.yearLabel} — ${event.title}`}
-                onClick={() => onSelectEvent(event)}
-              >
-                <span className="timeline-item__year">{event.yearLabel}</span>
-                <span className="timeline-item__title">{event.title}</span>
+              <li key={event.id} className="timeline__node">
+                <button
+                  type="button"
+                  data-event-id={event.id}
+                  className={`timeline-item timeline-item--${event.category}`}
+                  aria-pressed={selected}
+                  onClick={() => onSelectEvent(event)}
+                >
+                  <span className="timeline-item__year">{event.yearLabel}</span>
+                  <span className="timeline-item__title">{event.title}</span>
+                </button>
                 <span className="timeline-item__dot" aria-hidden="true" />
-              </button>
+              </li>
             );
           })}
-        </div>
+          {visibleEvents.length === 0 && (
+            <li className="timeline__empty">لا أحداث ضمن التصنيفات المختارة — فعّل تصنيفاً واحداً على الأقل.</li>
+          )}
+        </ol>
       </div>
 
       <div className="timeline__filters" role="group" aria-label="تصفية الأحداث حسب النوع">
+        <span className="timeline__filters-label" aria-hidden="true">
+          التصنيف:
+        </span>
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             type="button"
-            className="chip"
+            className={`chip chip--${cat}`}
             aria-pressed={activeCategories.includes(cat)}
             onClick={() => onToggleCategory(cat)}
           >
@@ -93,7 +99,7 @@ export function Timeline({
           </button>
         ))}
       </div>
-    </nav>
+    </section>
   );
 }
 

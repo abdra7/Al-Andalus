@@ -3,6 +3,8 @@
 // `confidenceNote` records the uncertainty. Never edit historical claims without
 // checking the cited source.
 
+import { books } from "./books";
+
 export interface Source {
   title: string;
   url: string;
@@ -358,7 +360,7 @@ export const cities: City[] = [
     latinName: "Sevilla",
     altNames: ["إشبيلية", "Sevilla", "Ishbiliya"],
     lat: 37.3891,
-    lng: -4.9845,
+    lng: -5.9845, // was -4.9845, which put Seville ~90 km east, near Écija
     founded: "أصلها روماني (Hispalis)، وبلغت أهمية كبرى في الإسلام",
     peakYear: 1150,
     endYear: 1248,
@@ -1023,7 +1025,7 @@ export interface SearchEntry {
   id: string;
   title: string;
   latinName?: string;
-  kind: "city" | "event" | "figure" | "period";
+  kind: "city" | "event" | "figure" | "period" | "book";
   year?: number;
   yearLabel?: string;
   description: string;
@@ -1059,6 +1061,13 @@ export const searchIndex: SearchEntry[] = [
     yearLabel: f.died !== undefined ? `${f.born}–${f.died}` : undefined,
     description: f.role,
     cityId: f.cityId,
+  })),
+  ...books.map((b) => ({
+    id: `book-${b.id}`,
+    title: b.title,
+    kind: "book" as const,
+    yearLabel: `${b.coversFrom}–${b.coversTo}`,
+    description: `${b.author} — ${b.description}`,
   })),
   ...periods.map((p) => ({
     id: `period-${p.id}`,

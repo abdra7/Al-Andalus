@@ -10,3 +10,6 @@ npm-debug.log*
 coverage/
 *.local
 .cache/
+
+# basemap renderer inputs (downloaded, see scripts/basemap/render.py)
+/data/
